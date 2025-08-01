@@ -1,0 +1,20 @@
+{
+  "name": "medfatura-app",
+  "main": "./src/worker/index.ts",
+  "compatibility_date": "2024-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true,
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "medfatura-db",
+      "database_id": "01984218-142f-7279-abd0-0b009fb31f22"
+    }
+  ]
+}

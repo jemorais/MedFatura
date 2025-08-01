@@ -1,0 +1,11 @@
+
+CREATE TABLE user_profiles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL UNIQUE,
+  cpf_crm TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  user_type TEXT NOT NULL CHECK (user_type IN ('medico', 'admin')),
+  is_active BOOLEAN DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

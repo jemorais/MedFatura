@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MedFatura Dev Mode Bookmarklet</title>
+</head>
+<body>
+    <h1>MedFatura Development Mode Bookmarklet</h1>
+    <p>Drag this link to your bookmarks bar:</p>
+    <a href="javascript:(function(){window.originalFetch=window.fetch;window.fetch=function(url,options={}){options.headers=options.headers||{};if(typeof options.headers==='string'){options.headers={'Content-Type':options.headers}}else if(Array.isArray(options.headers)){let newHeaders={};options.headers.forEach(([key,value])=>{newHeaders[key]=value});options.headers=newHeaders}else if(typeof options.headers==='object'&&!Array.isArray(options.headers)){options.headers={...options.headers}}else{options.headers={}};options.headers['x-dev-bypass-auth']='true';return window.originalFetch(url,options)};document.cookie='auth-session=dev-bypass-token; path=/; max-age=86400';localStorage.setItem('user',JSON.stringify({id:1,email:'admin@medfatura.com',name:'Admin',user_type:'admin',is_active:true}));localStorage.setItem('token','dev-bypass-token');alert('Development mode activated! You can now use the app without login.');})();" style="padding:10px;background:#007bff;color:white;text-decoration:none;border-radius:4px;">Activate Dev Mode</a>
+    
+    <p>Or copy this code and create a bookmark manually:</p>
+    <textarea style="width:100%;height:100px;" readonly>
+javascript:(function(){window.originalFetch=window.fetch;window.fetch=function(url,options={}){options.headers=options.headers||{};if(typeof options.headers==='string'){options.headers={'Content-Type':options.headers}}else if(Array.isArray(options.headers)){let newHeaders={};options.headers.forEach(([key,value])=>{newHeaders[key]=value});options.headers=newHeaders}else if(typeof options.headers==='object'&&!Array.isArray(options.headers)){options.headers={...options.headers}}else{options.headers={}};options.headers['x-dev-bypass-auth']='true';return window.originalFetch(url,options)};document.cookie='auth-session=dev-bypass-token; path=/; max-age=86400';localStorage.setItem('user',JSON.stringify({id:1,email:'admin@medfatura.com',name:'Admin',user_type:'admin',is_active:true}));localStorage.setItem('token','dev-bypass-token');alert('Development mode activated! You can now use the app without login.');})();
+    </textarea>
+    
+    <h2>Instructions:</h2>
+    <ol>
+        <li>Drag the blue button to your bookmarks bar, or copy the code above to create a new bookmark</li>
+        <li>Navigate to <a href="http://localhost:5173" target="_blank">http://localhost:5173</a></li>
+        <li>Click the bookmark you just created</li>
+        <li>You should see an alert saying "Development mode activated!"</li>
+        <li>Refresh the page - you should now be logged in as admin without needing credentials</li>
+    </ol>
+</body>
+</html>

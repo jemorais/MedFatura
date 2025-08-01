@@ -1,0 +1,39 @@
+dist/
+node_modules/
+.wrangler/
+.dev.vars
+worker-configuration.d.ts
+
+# Arquivos de segredos e banco de dados local
+/.env
+/database.sqlite
+*.db
+*.sqlite3
+
+# Arquivos de teste e temporários
+test-*.pdf
+test-*.cjs
+test-*.js
+*.log
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependências e cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Arquivos de build
+build/
+.next/
+out/

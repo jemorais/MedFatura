@@ -7,6 +7,7 @@
     "@hono/node-server": "^1.12.0",
     "@hono/zod-validator": "^0.5.0",
     "@sendgrid/mail": "^8.1.5",
+    "@supabase/supabase-js": "^2.55.0",
     "@types/sqlite3": "^3.1.11",
     "bcryptjs": "^2.4.3",
     "dotenv": "^17.2.1",

@@ -131,7 +131,7 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-brand-600 to-brand-400 rounded-lg flex items-center justify-center">
               <UserPlus className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -151,7 +151,7 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
         {message && (
           <div className={`mx-6 mt-4 p-3 rounded-lg border ${
             messageType === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-700' 
+              ? 'bg-brand-50 border-brand-200 text-brand-700' 
               : 'bg-red-50 border-red-200 text-red-700'
           }`}>
             <p className="text-sm">{message}</p>
@@ -162,7 +162,7 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
         <div className="p-6 overflow-y-auto max-h-[60vh]">
           {loading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Carregando convites...</p>
             </div>
           ) : invitations.length === 0 ? (
@@ -182,7 +182,7 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-3">
-                          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center">
+                          <div className="w-8 h-8 bg-gradient-to-r from-brand-600 to-brand-400 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs font-medium">
                               {invitation.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                             </span>
@@ -205,8 +205,8 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
                         <div className="flex items-center space-x-4 text-sm">
                           <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                             invitation.user_type === 'medico' 
-                              ? 'bg-blue-100 text-blue-800' 
-                              : 'bg-purple-100 text-purple-800'
+                              ? 'bg-brand-100 text-brand-800' 
+                              : 'bg-brand-50 text-brand-700'
                           }`}>
                             <Shield className="w-3 h-3 mr-1" />
                             {invitation.user_type === 'medico' ? 'Médico' : 'Administrador'}
@@ -228,7 +228,7 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
                         <button
                           onClick={() => handleResendInvitation(invitation.id)}
                           disabled={resendingId === invitation.id}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="bg-brand-100 text-brand-800 hover:bg-brand-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {resendingId === invitation.id ? (
                             <>
@@ -252,8 +252,8 @@ export default function PendingInvitesModal({ isOpen, onClose }: PendingInvitesM
         </div>
 
         <div className="px-6 pb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-blue-700 text-sm">
+          <div className="bg-brand-50 border border-brand-200 rounded-lg p-3">
+            <p className="text-brand-700 text-sm">
               <strong>Dica:</strong> Se o email não chegar, verifique a pasta de spam. 
               Os convites expiram em 7 dias após o envio.
             </p>

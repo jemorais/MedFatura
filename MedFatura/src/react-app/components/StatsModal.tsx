@@ -8,6 +8,7 @@ interface StatsModalProps {
   onClose: () => void;
   type: 'invoices' | 'users' | 'pending';
   title: string;
+  refreshTrigger?: number; // Optional prop to force refresh
 }
 
 interface Invoice {
@@ -31,6 +32,23 @@ interface PendingDoctor {
   user_id: string;
 }
 
+interface PendingInvoice {
+  id: number;
+  month: number;
+  year: number;
+  original_filename: string;
+  stored_filename?: string;
+  status: 'pendente' | 'pending';
+  created_at: string;
+  user_id: string;
+  user_name: string;
+  type: 'direct' | 'pending';
+  amount?: number;
+  description?: string;
+  notes?: string;
+  invoice_filename?: string;
+}
+
 interface UserProfile {
   id: number;
   name: string;
@@ -41,17 +59,28 @@ interface UserProfile {
   user_id: string;
 }
 
-export default function StatsModal({ isOpen, onClose, type, title }: StatsModalProps) {
+export default function StatsModal({ isOpen, onClose, type, title, refreshTrigger }: StatsModalProps) {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [pendingDoctors, setPendingDoctors] = useState<PendingDoctor[]>([]);
+  const [pendingInvoices, setPendingInvoices] = useState<PendingInvoice[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       loadData();
     }
-  }, [isOpen, type]);
+  }, [isOpen, type, refreshTrigger]);
+
+  // Reset data when modal closes to ensure fresh data on next open
+  useEffect(() => {
+    if (!isOpen) {
+      setInvoices([]);
+      setUsers([]);
+      setPendingDoctors([]);
+      setPendingInvoices([]);
+    }
+  }, [isOpen]);
 
   const loadData = async () => {
     setLoading(true);
@@ -63,10 +92,10 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
           setInvoices(data);
         }
       } else if (type === 'pending') {
-        const response = await fetch('/api/pending-doctors', { credentials: 'include' });
+        const response = await fetch('/api/pending-invoices', { credentials: 'include' });
         if (response.ok) {
           const data = await response.json();
-          setPendingDoctors(data);
+          setPendingInvoices(data);
         }
       } else if (type === 'users') {
         const response = await fetch('/api/users', { credentials: 'include' });
@@ -102,7 +131,7 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-brand-600 to-brand-400 rounded-lg flex items-center justify-center">
               {type === 'invoices' && <FileText className="w-5 h-5 text-white" />}
               {type === 'users' && <Users className="w-5 h-5 text-white" />}
               {type === 'pending' && <TrendingUp className="w-5 h-5 text-white" />}
@@ -112,7 +141,7 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
               <p className="text-sm text-gray-500">
                 {type === 'invoices' && `${invoices.length} fatura(s) encontrada(s)`}
                 {type === 'users' && `${users.length} usuário(s) ativo(s)`}
-                {type === 'pending' && `${pendingDoctors.length} médico(s) pendente(s)`}
+                {type === 'pending' && `${pendingInvoices.length} fatura(s) pendente(s)`}
               </p>
             </div>
           </div>
@@ -128,7 +157,7 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
         <div className="p-6 overflow-y-auto max-h-[60vh]">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
               <span className="ml-3 text-gray-600">Carregando dados...</span>
             </div>
           ) : (
@@ -149,7 +178,7 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
                             <div>
                               <button
                                 onClick={() => downloadInvoice(invoice.id, invoice.stored_filename || invoice.original_filename)}
-                                className="font-medium text-blue-600 hover:text-blue-800 hover:underline text-left"
+                                className="font-medium text-brand-700 hover:text-brand-800 hover:underline text-left"
                               >
                                 {invoice.stored_filename || invoice.original_filename}
                               </button>
@@ -163,7 +192,7 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
                             </div>
                           </div>
                           <div className="flex items-center space-x-3">
-                            <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                            <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-brand-100 text-brand-800">
                               Recebido
                             </span>
                             <button
@@ -183,36 +212,57 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
 
               {type === 'pending' && (
                 <div className="space-y-3">
-                  {pendingDoctors.length === 0 ? (
+                  {pendingInvoices.length === 0 ? (
                     <div className="text-center py-8">
                       <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">Todos os médicos enviaram suas faturas este mês!</p>
+                      <p className="text-gray-500">Não há faturas pendentes no momento!</p>
                     </div>
                   ) : (
-                    pendingDoctors.map((doctor) => (
-                      <div key={doctor.id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    pendingInvoices.map((pendingItem) => (
+                      <div key={`${pendingItem.type}-${pendingItem.id}`} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
-                              <span className="text-white text-sm font-medium">
-                                {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                              </span>
-                            </div>
+                            <FileText className="w-5 h-5 text-gray-400" />
                             <div>
-                              <p className="font-medium text-gray-900">{doctor.name}</p>
+                              <div className="font-medium text-gray-900">
+                                {pendingItem.type === 'direct' ? pendingItem.original_filename : pendingItem.description}
+                              </div>
                               <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span className="font-mono">{maskCpfCrm(doctor.cpf_crm)}</span>
-                                <span className="text-xs bg-gray-200 px-2 py-1 rounded">
-                                  {getDocumentTypeLabel(doctor.cpf_crm)}
+                                <span className="flex items-center">
+                                  <Calendar className="w-4 h-4 mr-1" />
+                                  {getMonthName(pendingItem.month)} {pendingItem.year}
                                 </span>
-                                <span>Pendente para {getMonthName(new Date().getMonth() + 1)} {new Date().getFullYear()}</span>
+                                <span>Por: {pendingItem.user_name}</span>
+                                {pendingItem.type === 'pending' && pendingItem.amount && (
+                                  <span className="text-green-600 font-medium">
+                                    R$ {pendingItem.amount.toFixed(2)}
+                                  </span>
+                                )}
+                                <span>Criado em {formatDate(pendingItem.created_at)}</span>
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center space-x-3">
-                            <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
-                              Fatura Pendente
+                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                              pendingItem.type === 'direct' 
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-orange-100 text-orange-800'
+                            }`}>
+                              {pendingItem.type === 'direct' ? 'Fatura Pendente' : 'Cobrança Pendente'}
                             </span>
+                            {pendingItem.stored_filename && (
+                              <button
+                                onClick={() => {
+                                  if (pendingItem.type === 'direct') {
+                                    downloadInvoice(pendingItem.id, pendingItem.stored_filename!);
+                                  }
+                                }}
+                                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                title="Baixar arquivo"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -233,7 +283,7 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
                       <div key={user.id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-r from-brand-600 to-brand-400 rounded-lg flex items-center justify-center">
                               <span className="text-white text-sm font-medium">
                                 {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                               </span>
@@ -252,12 +302,12 @@ export default function StatsModal({ isOpen, onClose, type, title }: StatsModalP
                           <div className="flex items-center space-x-3">
                             <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                               user.user_type === 'medico' 
-                                ? 'bg-blue-100 text-blue-800' 
-                                : 'bg-purple-100 text-purple-800'
+                                ? 'bg-brand-100 text-brand-800' 
+                                : 'bg-brand-50 text-brand-700'
                             }`}>
                               {user.user_type === 'medico' ? 'Médico' : 'Administrador'}
                             </span>
-                            <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                            <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-brand-100 text-brand-800">
                               Ativo
                             </span>
                           </div>

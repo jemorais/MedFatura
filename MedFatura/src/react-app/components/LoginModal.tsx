@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { FileText, LogIn, UserPlus, Eye, EyeOff, X } from 'lucide-react';
+import { useAuth } from '@/react-app/contexts/AuthContext';
+import { supabase } from '@/react-app/utils/supabase';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -7,6 +9,7 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,34 +31,24 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setError('');
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const payload = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : formData;
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        if (isLogin) {
-          window.location.reload(); // Recarrega para atualizar o estado de autenticação
-        } else {
-          setError('');
-          setIsLogin(true);
-          setFormData({ ...formData, password: '' });
-          alert('Usuário criado com sucesso! Faça login agora.');
-        }
+      if (isLogin) {
+        await login(formData.email, formData.password);
+        onClose();
       } else {
-        setError(data.error || 'Erro desconhecido');
+        if (!supabase) throw new Error('Supabase não configurado');
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {}
+        });
+        if (error) throw error;
+        setError('');
+        setIsLogin(true);
+        setFormData({ ...formData, password: '' });
+        alert('Conta criada! Verifique seu email (se exigido) e faça login.');
       }
-    } catch (error) {
-      setError('Erro de conexão. Tente novamente.');
+    } catch (error: any) {
+      setError(error?.message || 'Erro de conexão. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -78,10 +71,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <X className="w-6 h-6" />
         </button>
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-brand-600 to-brand-400 rounded-xl flex items-center justify-center mx-auto mb-4">
             <FileText className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-700 to-brand-500 bg-clip-text text-transparent mb-2">
             MedFatura
           </h1>
           <p className="text-gray-600">
@@ -106,7 +99,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               placeholder="seu@email.com"
             />
           </div>
@@ -122,7 +115,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="Sua senha"
               />
               <button
@@ -138,7 +131,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           {!isLogin && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text sm font-medium text-gray-700 mb-1">
                   Nome Completo
                 </label>
                 <input
@@ -147,7 +140,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                   placeholder="Seu nome completo"
                 />
               </div>
@@ -161,7 +154,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="cpf_crm"
                   value={formData.cpf_crm}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                   placeholder="000.000.000-00 ou CRM 12345"
                 />
               </div>
@@ -174,7 +167,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="user_type"
                   value={formData.user_type}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 >
                   <option value="medico">Médico</option>
                   <option value="admin">Administrador</option>
@@ -187,7 +180,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             {isLogin ? <LogIn className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
             <span>
@@ -206,7 +199,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               setError('');
               setFormData({ ...formData, password: '' });
             }}
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-brand-700 hover:text-brand-800 font-medium"
           >
             {isLogin ? 'Não tem conta? Criar uma' : 'Já tem conta? Fazer login'}
           </button>

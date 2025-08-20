@@ -43,13 +43,13 @@ export default function ProfileSetup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-brand-600 to-brand-400 rounded-xl flex items-center justify-center mx-auto mb-4">
             <FileText className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent mb-2">
             Configurar Perfil
           </h1>
           <p className="text-gray-600">Complete seu perfil para acessar o sistema</p>
@@ -72,7 +72,7 @@ export default function ProfileSetup() {
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               placeholder="Digite seu nome completo"
             />
           </div>
@@ -87,7 +87,7 @@ export default function ProfileSetup() {
               required
               value={formData.cpf_crm}
               onChange={(e) => setFormData({ ...formData, cpf_crm: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               placeholder="CPF (123.456.789-00), CNPJ (12.345.678/0001-90) ou CRM (12345-SP)"
             />
           </div>
@@ -100,7 +100,7 @@ export default function ProfileSetup() {
             <select
               value={formData.user_type}
               onChange={(e) => setFormData({ ...formData, user_type: e.target.value as 'medico' | 'admin' | 'prestador' })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
             >
               <option value="medico">Médico</option>
               <option value="admin">Administrador</option>
@@ -111,7 +111,7 @@ export default function ProfileSetup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Criando Perfil...' : 'Criar Perfil'}
           </button>

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/react-app/contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { FileText, Users, TrendingUp, Calendar, Plus, Search, Filter, LogOut, UserPlus, RefreshCw, Power, PowerOff } from 'lucide-react';
+import { FileText, Users, TrendingUp, Calendar, Plus, Search, Filter, LogOut, UserPlus, RefreshCw, Power, PowerOff, Trash2 } from 'lucide-react';
 import InvoiceModal from '@/react-app/components/InvoiceModal';
 import LoginModal from '@/react-app/components/LoginModal';
 import InviteUserModal from '@/react-app/components/InviteUserModal';
 import PendingInvitesModal from '@/react-app/components/PendingInvitesModal';
 import StatCard from '@/react-app/components/StatCard';
 import StatsModal from '@/react-app/components/StatsModal';
+import UnifiedInvoicePanel from '@/react-app/components/UnifiedInvoicePanel';
+import NotificationBell from '@/react-app/components/NotificationBell';
 import { maskCpfCrm, getDocumentTypeLabel } from '@/react-app/utils/privacy';
 import { downloadInvoice } from '@/react-app/utils/downloadUtils';
 
@@ -63,7 +65,9 @@ export default function Home() {
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'recebido' | 'pendente'>('all');
+  const [monthFilter, setMonthFilter] = useState<'all' | number>('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     if (!isPending && !user) {
@@ -96,10 +100,12 @@ export default function Home() {
       }
 
       // Load data in parallel
+      const params = new URLSearchParams();
+      const statsUrl = `/api/stats${params.toString() ? `?${params.toString()}` : ''}`;
       const [invoicesRes, usersRes, statsRes] = await Promise.all([
         fetch('/api/invoices', { credentials: 'include' }),
         fetch('/api/users', { credentials: 'include' }),
-        fetch('/api/stats', { credentials: 'include' })
+        fetch(statsUrl, { credentials: 'include' })
       ]);
 
       if (invoicesRes.ok) {
@@ -150,7 +156,7 @@ export default function Home() {
     }
   };
 
-  // Apply filters whenever invoices, searchTerm, or statusFilter changes
+  // Apply filters whenever invoices, searchTerm, statusFilter, or monthFilter changes
   useEffect(() => {
     let filtered = [...invoices];
 
@@ -170,8 +176,13 @@ export default function Home() {
       filtered = filtered.filter(invoice => invoice.status === statusFilter);
     }
 
+    // Apply month filter
+    if (monthFilter !== 'all') {
+      filtered = filtered.filter(invoice => invoice.month === monthFilter);
+    }
+
     setFilteredInvoices(filtered);
-  }, [invoices, searchTerm, statusFilter]);
+  }, [invoices, searchTerm, statusFilter, monthFilter]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -181,9 +192,14 @@ export default function Home() {
     setStatusFilter(status);
   };
 
+  const handleMonthFilter = (month: 'all' | number) => {
+    setMonthFilter(month);
+  };
+
   const clearFilters = () => {
     setSearchTerm('');
     setStatusFilter('all');
+    setMonthFilter('all');
   };
 
   const getMonthName = (month: number) => {
@@ -240,6 +256,7 @@ export default function Home() {
 
       if (response.ok) {
         await loadData(); // Reload data
+        setRefreshTrigger(prev => prev + 1); // Trigger modal refresh
         setShowInvoiceModal(false);
       } else {
         const error = await response.json();
@@ -310,12 +327,12 @@ export default function Home() {
 
   if (isPending || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-brand-600 to-brand-400 rounded-xl flex items-center justify-center mx-auto mb-6">
             <FileText className="w-8 h-8 text-white" />
           </div>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Carregando dados...</p>
         </div>
       </div>
@@ -327,26 +344,27 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-brand-600 to-brand-400 rounded-lg flex items-center justify-center">
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-700 to-brand-500 bg-clip-text text-transparent">
                   MedFatura
                 </h1>
                 <p className="text-sm text-gray-500">Sistema de Gestão de Faturas Médicas</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               {userProfile && (
                 <div className="flex items-center space-x-3 text-sm text-gray-600">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-brand-600 to-brand-400 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-medium">
                       {userProfile.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </span>
@@ -359,14 +377,14 @@ export default function Home() {
                   <>
                     <button
                       onClick={() => setShowPendingInvitesModal(true)}
-                      className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                      className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                     >
                       <RefreshCw className="w-4 h-4" />
                       <span>Reenviar Convites</span>
                     </button>
                     <button
                       onClick={() => setShowInviteModal(true)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                      className="bg-brand-700 hover:bg-brand-800 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                     >
                       <UserPlus className="w-4 h-4" />
                       <span>Convidar Usuário</span>
@@ -376,7 +394,7 @@ export default function Home() {
                 {userProfile?.user_type === 'medico' && (
                   <button
                     onClick={() => setShowInvoiceModal(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Enviar Nota Fiscal</span>
@@ -425,153 +443,15 @@ export default function Home() {
           />
         </div>
 
-        {/* Recent Invoices */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Faturas Recentes</h2>
-              <div className="flex items-center space-x-2">
-                <button 
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="Buscar"
-                >
-                  <Search className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="Filtrar"
-                >
-                  <Filter className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Filters Panel */}
-          {showFilters && (
-            <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Buscar
-                  </label>
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    placeholder="Buscar por nome do arquivo, mês ou ano..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="sm:w-48">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => handleStatusFilter(e.target.value as 'all' | 'recebido' | 'pendente')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="all">Todos</option>
-                    <option value="recebido">Recebido</option>
-                    <option value="pendente">Pendente</option>
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <button
-                    onClick={clearFilters}
-                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-                  >
-                    Limpar
-                  </button>
-                </div>
-              </div>
-              {(searchTerm || statusFilter !== 'all') && (
-                <div className="mt-3 text-sm text-gray-600">
-                  Mostrando {filteredInvoices.length} de {invoices.length} faturas
-                </div>
-              )}
-            </div>
-          )}
-          
-          <div className="overflow-x-auto">
-            {filteredInvoices.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">
-                  {invoices.length === 0 
-                    ? "Nenhuma fatura encontrada" 
-                    : "Nenhuma fatura corresponde aos filtros aplicados"
-                  }
-                </p>
-                <p className="text-sm text-gray-400">
-                  {invoices.length === 0 
-                    ? 'Clique em "Nova Fatura" para adicionar a primeira'
-                    : 'Tente ajustar os filtros ou limpar a busca'
-                  }
-                </p>
-              </div>
-            ) : (
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Arquivo
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Período
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Data de Envio
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredInvoices.map((invoice) => (
-                      <tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <FileText className="w-5 h-5 text-gray-400 mr-3" />
-                            <button
-                              onClick={() => handleDownload(invoice.id, invoice.stored_filename || invoice.original_filename)}
-                              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors text-left"
-                            >
-                              {invoice.stored_filename || invoice.original_filename}
-                            </button>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                            <span className="text-sm text-gray-900">
-                              {getMonthName(invoice.month)} {invoice.year}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                            invoice.status === 'recebido' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {invoice.status === 'recebido' ? 'Recebido' : 'Pendente'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(invoice.created_at)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-          </div>
-        </div>
+        {/* Unified Invoice Management */}
+        {userProfile && (
+          <UnifiedInvoicePanel 
+            userProfile={userProfile} 
+            users={users}
+
+            onDataChange={loadData} // Recarregar dados quando houver mudanças
+          />
+        )}
 
         {/* Users Section - Only show for admin users */}
         {userProfile?.user_type === 'admin' && (
@@ -606,7 +486,7 @@ export default function Home() {
                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center mr-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-brand-600 to-brand-400 rounded-full flex items-center justify-center mr-3">
                             <span className="text-white text-sm font-medium">
                               {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                             </span>
@@ -614,7 +494,7 @@ export default function Home() {
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => handleViewUserDetails(user)}
-                              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                              className="text-sm font-medium text-brand-700 hover:text-brand-800 hover:underline transition-colors"
                             >
                               {user.name}
                             </button>
@@ -624,8 +504,8 @@ export default function Home() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                           user.user_type === 'medico' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-purple-100 text-purple-800'
+                            ? 'bg-brand-100 text-brand-800' 
+                            : 'bg-brand-50 text-brand-700'
                         }`}>
                           {user.user_type === 'medico' ? 'Médico' : 'Administrador'}
                         </span>
@@ -643,8 +523,8 @@ export default function Home() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                           user.is_active 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
+                            ? 'bg-brand-100 text-brand-800' 
+                            : 'bg-gray-100 text-gray-600'
                         }`}>
                           {user.is_active ? 'Ativo' : 'Inativo'}
                         </span>
@@ -655,11 +535,19 @@ export default function Home() {
                           className={`p-2 rounded-lg transition-colors ${
                             user.is_active
                               ? 'text-red-600 hover:text-red-800 hover:bg-red-50'
-                              : 'text-green-600 hover:text-green-800 hover:bg-green-50'
+                              : 'text-brand-600 hover:text-brand-800 hover:bg-brand-50'
                           }`}
                           title={user.is_active ? 'Desativar usuário' : 'Ativar usuário'}
                         >
                           {user.is_active ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
+                        </button>
+                        {/* Delete user permanently */}
+                        <button
+                          onClick={() => deleteUser(user.id, user.name)}
+                          className="p-2 ml-2 rounded-lg transition-colors text-red-600 hover:text-red-800 hover:bg-red-50"
+                          title="Deletar usuário permanentemente"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>
@@ -669,6 +557,8 @@ export default function Home() {
             </div>
           </div>
         )}
+
+
       </main>
 
       {/* Modals */}
@@ -709,6 +599,7 @@ export default function Home() {
           onClose={() => setShowStatsModal(false)}
           type={statsModalType}
           title={statsModalTitle}
+          refreshTrigger={refreshTrigger}
         />
       )}
 
@@ -718,7 +609,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-r from-brand-600 to-brand-400 rounded-lg flex items-center justify-center">
                   <Users className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -752,8 +643,8 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Usuário</label>
                   <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${
                     selectedUser.user_type === 'medico' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-purple-100 text-purple-800'
+                      ? 'bg-brand-100 text-brand-800' 
+                      : 'bg-brand-50 text-brand-700'
                   }`}>
                     {selectedUser.user_type === 'medico' ? 'Médico' : 'Administrador'}
                   </span>
@@ -763,8 +654,8 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${
                     selectedUser.is_active 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
+                      ? 'bg-brand-100 text-brand-800' 
+                      : 'bg-brand-50 text-brand-700'
                   }`}>
                     {selectedUser.is_active ? 'Ativo' : 'Inativo'}
                   </span>
@@ -777,8 +668,8 @@ export default function Home() {
               </div>
               
               <div className="mt-6 pt-4 border-t border-gray-100">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-blue-700 text-sm">
+                <div className="bg-brand-50 border border-brand-200 rounded-lg p-3">
+                  <p className="text-brand-700 text-sm">
                     <strong>Privacidade:</strong> Os dados completos são exibidos apenas nesta tela de detalhes, 
                     conforme as diretrizes da LGPD.
                   </p>

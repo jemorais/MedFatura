@@ -9,7 +9,7 @@ async function runMigrations() {
   const db = new sqlite3.Database(dbPath);
 
   // Executar migrações
-  const migrations = ['2.sql', '3.sql', '4.sql', '5.sql', '6.sql'];
+  const migrations = ['2.sql', '3.sql', '4.sql', '5.sql', '6.sql', '7.sql', '8.sql', '9.sql', '10.sql', '11.sql'];
 
   console.log('🔄 Executando migrações...');
 

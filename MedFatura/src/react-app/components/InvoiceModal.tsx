@@ -132,7 +132,7 @@ export default function InvoiceModal({ isOpen, onClose, onSubmit, userProfile }:
               <select
                 value={formData.month}
                 onChange={(e) => setFormData({ ...formData, month: parseInt(e.target.value) })}
-                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
                 required
               >
                 {months.map((month, index) => (
@@ -150,7 +150,7 @@ export default function InvoiceModal({ isOpen, onClose, onSubmit, userProfile }:
               <select
                 value={formData.year}
                 onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
                 required
               >
                 {years.map((year) => (
@@ -205,8 +205,8 @@ export default function InvoiceModal({ isOpen, onClose, onSubmit, userProfile }:
           </div>
 
           {selectedFile && userProfile && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-700">
+            <div className="bg-brand-50 border border-brand-200 rounded-lg p-3">
+              <p className="text-sm text-brand-700">
                 <strong>Nome do arquivo final:</strong><br />
                 {generateFilename()}
               </p>
@@ -224,7 +224,7 @@ export default function InvoiceModal({ isOpen, onClose, onSubmit, userProfile }:
             <button
               type="submit"
               disabled={loading || !selectedFile}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="flex-1 bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               {loading ? 'Enviando...' : 'Enviar Fatura'}
             </button>

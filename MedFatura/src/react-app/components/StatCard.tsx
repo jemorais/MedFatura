@@ -11,14 +11,14 @@ interface StatCardProps {
 export default function StatCard({ title, value, icon: Icon, color, onClick }: StatCardProps) {
   const colorClasses = {
     blue: {
-      bg: 'bg-blue-100',
-      icon: 'text-blue-600',
-      hover: 'hover:bg-blue-50'
+      bg: 'bg-brand-100',
+      icon: 'text-brand-600',
+      hover: 'hover:bg-brand-50'
     },
     green: {
-      bg: 'bg-green-100',
-      icon: 'text-green-600',
-      hover: 'hover:bg-green-50'
+      bg: 'bg-brand-100',
+      icon: 'text-brand-600',
+      hover: 'hover:bg-brand-50'
     },
     yellow: {
       bg: 'bg-yellow-100',

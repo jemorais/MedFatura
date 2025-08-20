@@ -82,12 +82,12 @@ export default function InviteAccept() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-brand-600 to-brand-400 rounded-xl flex items-center justify-center mx-auto mb-6">
             <FileText className="w-8 h-8 text-white" />
           </div>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4">
             <Loader className="w-6 h-6" />
           </div>
           <p className="text-gray-600">Validando convite...</p>
@@ -98,7 +98,7 @@ export default function InviteAccept() {
 
   if (error || !invitation) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 w-full max-w-md text-center">
           <div className="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-6">
             <XCircle className="w-8 h-8 text-red-600" />
@@ -107,7 +107,7 @@ export default function InviteAccept() {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white font-medium py-3 px-4 rounded-lg transition-colors"
           >
             Ir para Login
           </button>
@@ -120,7 +120,7 @@ export default function InviteAccept() {
 
   if (isExpired || invitation.is_used) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 w-full max-w-md text-center">
           <div className="w-16 h-16 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-6">
             <XCircle className="w-8 h-8 text-yellow-600" />
@@ -136,7 +136,7 @@ export default function InviteAccept() {
           </p>
           <button
             onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white font-medium py-3 px-4 rounded-lg transition-colors"
           >
             Ir para Login
           </button>
@@ -146,13 +146,13 @@ export default function InviteAccept() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-brand-600 to-brand-400 rounded-xl flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent mb-2">
             Aceitar Convite
           </h1>
           <p className="text-gray-600">Você foi convidado para usar o MedFatura</p>
@@ -175,7 +175,7 @@ export default function InviteAccept() {
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Tipo:</span>
               <span className={`text-sm font-medium ${
-                invitation.user_type === 'medico' ? 'text-blue-600' : 'text-purple-600'
+                invitation.user_type === 'medico' ? 'text-brand-700' : 'text-brand-700'
               }`}>
                 {invitation.user_type === 'medico' ? 'Médico' : 'Administrador'}
               </span>
@@ -187,7 +187,7 @@ export default function InviteAccept() {
           <button
             onClick={handleAcceptInvitation}
             disabled={accepting}
-            className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             {accepting ? (
               <>

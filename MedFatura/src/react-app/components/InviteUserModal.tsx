@@ -97,7 +97,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-brand-600 to-brand-400 rounded-lg flex items-center justify-center">
               <UserPlus className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -122,8 +122,8 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
           )}
 
           {success && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-              <p className="text-green-700 text-sm">{success}</p>
+            <div className="bg-brand-50 border border-brand-200 rounded-lg p-3 mb-4">
+<p className="text-brand-700 text-sm">{success}</p>
               {inviteLink && (
                 <div className="mt-3 p-3 bg-gray-100 rounded border">
                   <p className="text-sm text-gray-600 mb-2">Link do convite:</p>
@@ -137,7 +137,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                     <button
                       type="button"
                       onClick={() => copyToClipboard(inviteLink)}
-                      className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                      className="px-2 py-1 bg-brand-600 text-white text-xs rounded hover:bg-brand-700"
                     >
                       Copiar
                     </button>
@@ -158,7 +158,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="email@exemplo.com"
               />
             </div>
@@ -173,7 +173,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="Digite o nome completo"
               />
             </div>
@@ -188,7 +188,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                 required
                 value={formData.cpf_crm}
                 onChange={(e) => setFormData({ ...formData, cpf_crm: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="CPF (123.456.789-00), CNPJ (12.345.678/0001-90) ou CRM (12345-SP)"
               />
             </div>
@@ -201,7 +201,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
               <select
                 value={formData.user_type}
                 onChange={(e) => setFormData({ ...formData, user_type: e.target.value as 'medico' | 'admin' | 'prestador' })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               >
                 <option value="medico">Médico</option>
                 <option value="admin">Administrador</option>
@@ -221,7 +221,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-4 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-700 hover:to-brand-500 text-white px-4 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Enviando...' : 'Enviar Convite'}
             </button>
@@ -229,8 +229,8 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
         </form>
 
         <div className="px-6 pb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-blue-700 text-sm">
+          <div className="bg-brand-50 border border-brand-200 rounded-lg p-3">
+            <p className="text-brand-700 text-sm">
               <strong>Nota:</strong> O usuário receberá um email automático com link de acesso. 
               O convite expira em 7 dias e não é necessário ter conta Google.
             </p>

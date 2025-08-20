@@ -1,0 +1,36 @@
+name = "medfatura"
+main = "src/worker/index.ts"
+compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+
+[vars]
+APP_ENV = "production"
+MAX_FILE_SIZE = "10485760"
+BCRYPT_ROUNDS = "10"
+
+# Secrets (configure via wrangler secret put)
+# SUPABASE_URL
+# SUPABASE_ANON_KEY
+# SUPABASE_SERVICE_ROLE_KEY
+# SESSION_SECRET
+# JWT_SECRET
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+preview_id = "preview_sessions"
+id = "production_sessions"
+
+[site]
+bucket = "./dist"
+entry-point = "workers-site"
+
+[env.staging]
+name = "medfatura-staging"
+vars = { APP_ENV = "staging" }
+
+[env.production]
+name = "medfatura-production"
+vars = { APP_ENV = "production" }

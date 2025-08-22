@@ -148,10 +148,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     if (supabase) {
       await supabase.auth.signOut();
-    } else {
-      // Logout via cookie session - limpar cookie
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
     }
+    // Also call backend to clear cookie
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
     setUser(null);
   };
 

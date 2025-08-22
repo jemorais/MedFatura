@@ -32,6 +32,7 @@
     "@vitejs/plugin-react": "4.4.1",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.0.1",
+    "cross-env": "^10.0.0",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.19",
@@ -45,12 +46,12 @@
     "wrangler": "^3.78.12"
   },
   "scripts": {
-    "build": "node build.js",
+    "build": "node build.cjs",
     "build:react": "vite build",
     "build:worker": "tsc -p tsconfig.worker.json",
     "dev": "concurrently --kill-others \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:client": "vite --port 0",
-    "dev:server": "tsx watch server.ts",
+    "dev:client": "vite",
+    "dev:server": "cross-env NODE_ENV=development tsx watch server.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server.js",
